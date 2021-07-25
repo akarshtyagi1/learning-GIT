@@ -20,5 +20,7 @@ async function run() {
         await client.close();
     }
     console.log(" hello dear");
+    var a = "I am learning git";
+    console.log(a);
 }
 run().catch(console.dir);
