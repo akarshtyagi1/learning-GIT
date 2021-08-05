@@ -1,26 +1,52 @@
-const { MongoClient } = require("mongodb");
+require('dotenv').config();
+const express = require('express');
+const mongoose = require('mongoose');
+const blogs = require('./blogs');
+const app = express();
 
-// Connection URI
-const uri =
-    "mongodb+srv://root:admin /?poolSize=20&writeConcern=majority";
+mongoose.connect("mongodb+srv://root:admin@mysampleproject.qvmgg.mongodb.net/blogs?retryWrites=true&w=majority",
+    { useNewUrlParser: true, useUnifiedTopology: true }).then(
+        console.log("Database Connected")
+    );
 
-// Create a new MongoClient
-const client = new MongoClient(uri);
 
-async function run() {
-    try {
-        // Connect the client to the server
-        await client.connect();
+const db = mongoose.connection
+db.on('error', (error) => console.error(error));
+db.once('open', () => console.log("Connection Established Successfully"));
 
-        // Establish and verify connection
-        await client.db("admin").command({ ping: 1 });
-        console.log("Connected successfully to server");
-    } finally {
-        // Ensures that the client will close when you finish/error
-        await client.close();
-    }
-    console.log(" hello dear");
-    var a = "I am learning git";
-    console.log(a);
+const newBlog = new blogs({
+    title: "My second Blog",
+    author: "Akarsh Tyagi",
+    blog: " There is nothing yet to add to the blog",
+    date: Date.now()
+});
+
+async function getData() {
+    const data = await db.collection('blog').find({});
+    console.log(data);
+    console.log("Data fetched Successfully");
+};
+
+async function insertData() {
+    await db.collection('blogs').insertOne(newBlog).then(
+        () => {
+            console.log("Data added successfully");
+        }
+    ).catch(
+        () => {
+            console.log("failed");
+        }
+    )
 }
-run().catch(console.dir);
+
+async function getData() {
+    await blog.find({}, (err, blog) => {
+        if (err) return console.warn(err);
+        console.log(blog);
+    });
+};
+
+getData();
+// insertData();
+
+app.listen(3001, () => console.log("Server is running on port:3001"));
